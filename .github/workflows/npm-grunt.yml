@@ -16,14 +16,22 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20.x  # You can change this to 18.x or 22.x if you want
+        node-version: 20.x
 
     - name: Install dependencies
       run: |
-        npm install discord.js  # install discord.js directly
-        npm install             # install all other dependencies in package.json
+        # If package.json doesn't exist, create one so npm won't fail
+        if [ ! -f package.json ]; then
+          echo '{"name":"discord-bot","version":"1.0.0"}' > package.json
+        fi
 
-    - name: Build with Grunt
+        # Install discord.js and other common packages
+        npm install discord.js dotenv
+
+        # Install all dependencies listed in package.json
+        npm install
+
+    - name: Build with Grunt (optional)
       run: |
         if [ -f Gruntfile.js ]; then
           npx grunt
@@ -32,4 +40,6 @@ jobs:
         fi
 
     - name: Run the bot
-      run: node index.js
+      run: |
+        echo "Starting Discord bot..."
+        node index.js
